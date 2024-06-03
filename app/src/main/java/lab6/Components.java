@@ -3,12 +3,51 @@
  */
 package lab6;
 
+import java.io.*;
+import java.util.*;
+
 public class Components {
-    public String getGreeting() {
-        return "Hello World!";
+    public static void main(String[] args) throws IOException {
+        String filename = args[0];
+        int[][] adjacencyMatrix;
+        int numVertices = 0;
+
+        BufferedReader br = new BufferedReader(new FileReader(filename));
+        //reads the first line and sets numVertices to that value
+        numVertices = Integer.parseInt(br.readLine());
+        adjacencyMatrix = new int[numVertices][numVertices];
+
+        //loops thru the rest of the lines reads the nodes and then adds them to the matrix
+        String line = "";
+        while ((line = br.readLine()) != null) {
+            String[] nodes = line.split("\\s+");
+            //reads and creates nodes 1 and 2 then inserts them in the matrix
+            int node1 = Integer.parseInt(nodes[0]);
+            int node2 = Integer.parseInt(nodes[1]);
+            adjacencyMatrix[node1][node2] = adjacencyMatrix[node2][node1] = 1;
+        }
+        br.close();
+
+        boolean[] visited = new boolean[numVertices];
+        int connectedComponents = 0;
+
+        //loops thru the matrix and does a dfs to find the connected nodes
+        for (int i = 0; i < numVertices; i++) {
+            if (!visited[i]) {
+                dfs(i, visited, adjacencyMatrix);
+                connectedComponents++;
+            }
+        }
+        System.out.println(connectedComponents);
     }
 
-    public static void main(String[] args) {
-        System.out.println(new Components().getGreeting());
+    private static void dfs(int node, boolean[] visited, int[][] adjacencyMatrix) {
+        //standard dfs algo
+        visited[node] = true;
+        for (int i = 0; i < adjacencyMatrix.length; i++) {
+            if (adjacencyMatrix[node][i] == 1 && !visited[i]) {
+                dfs(i, visited, adjacencyMatrix);
+            }
+        }
     }
 }
